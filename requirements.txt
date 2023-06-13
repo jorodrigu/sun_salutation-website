@@ -2,6 +2,6 @@ streamlit
 
 opencv-python-headless
 
-tensorflow
+tensorflow==2.12.0
 numpy
 pandas
