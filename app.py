@@ -177,61 +177,88 @@ frame_delay =  1/ fps
 frame_counter=0
 
 
-cap = cv2.VideoCapture(-1)
+# cap = cv2.VideoCapture(-1)
+
+#######################################Joao#################
+def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
+    image = frame.to_ndarray(format="bgr24")
+    cv2.putText(
+            image,
+            str(image.mean()),
+            (50,50),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 0, 0),
+            2,
+        )
+    return av.VideoFrame.from_ndarray(image, format="bgr24")
 
 
+webrtc_ctx = webrtc_streamer(
+    key="object-detection",
+    mode=WebRtcMode.SENDRECV,
+    video_frame_callback=video_frame_callback,
+    rtc_configuration={  # Add this config
+        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+    },
+    media_stream_constraints={"video": True, "audio": False},
+    async_processing=True,
+)
+
+
+###########################################################
 start_time = time.time()
-while(cap.isOpened()):
-# Capture frame-by-frame
-    ret, frame = cap.read()
-    if ret is True:
-        frame_counter += 1  # Increment frame counter
+# while(cap.isOpened()):
+# # Capture frame-by-frame
+#     ret, frame = cap.read()
+#     if ret is True:
+#         frame_counter += 1  # Increment frame counter
 
-        # Skip processing for two frames
-        if frame_counter % 3 != 0:
-            continue
+#         # Skip processing for two frames
+#         if frame_counter % 3 != 0:
+#             continue
 
-        skelet(frame)
+#         skelet(frame)
 
-        current_time = time.time()
-        # If the current time is greater than the start time plus the frame delay
-        # Then process the frame and reset the start time
-        if current_time > start_time + frame_delay:
-            start_time = current_time
-        coord, min_landmark_score = coord_landmarks(frame)
-        #coord2= coord.shape
-        coord = coord.reshape((1, 51))
-        processed_X_pred = preprocess_data(coord)
-        prediction = loaded_model.predict(processed_X_pred, verbose= 0)
-        predicted_class = np.argmax(prediction)
-        #coord2= coord.shape
-        if min_landmark_score >= 0.3:
-            #show in which class the prediction is print("Predicted class:", predicted_class)
-            if predicted_class != 5:
-                    if predicted_class != last_predicted_class:
-                        st.write('-')
-                        st.write(category_status)
-                        if predicted_class == 0:
-                            update_category('category0')
-                            st.write('You are doing the Mountain!')
-                        if predicted_class == 1:
-                            update_category('category1')
-                            st.write('You are doing the Forward-Bend!')
-                        if predicted_class == 2:
-                            update_category('category2')
-                            st.write('You are doing the Plank!')
-                        if predicted_class == 3:
-                            update_category('category3')
-                            st.write('You are doing the Kobra!')
-                        if predicted_class == 4:
-                            update_category('category4')
-                            st.write('You are doing the Down-Dog!')
-                        st.write('-')
-                    last_predicted_class = predicted_class
+#         current_time = time.time()
+#         # If the current time is greater than the start time plus the frame delay
+#         # Then process the frame and reset the start time
+#         if current_time > start_time + frame_delay:
+#             start_time = current_time
+#         coord, min_landmark_score = coord_landmarks(frame)
+#         #coord2= coord.shape
+#         coord = coord.reshape((1, 51))
+#         processed_X_pred = preprocess_data(coord)
+#         prediction = loaded_model.predict(processed_X_pred, verbose= 0)
+#         predicted_class = np.argmax(prediction)
+#         #coord2= coord.shape
+#         if min_landmark_score >= 0.3:
+#             #show in which class the prediction is print("Predicted class:", predicted_class)
+#             if predicted_class != 5:
+#                     if predicted_class != last_predicted_class:
+#                         st.write('-')
+#                         st.write(category_status)
+#                         if predicted_class == 0:
+#                             update_category('category0')
+#                             st.write('You are doing the Mountain!')
+#                         if predicted_class == 1:
+#                             update_category('category1')
+#                             st.write('You are doing the Forward-Bend!')
+#                         if predicted_class == 2:
+#                             update_category('category2')
+#                             st.write('You are doing the Plank!')
+#                         if predicted_class == 3:
+#                             update_category('category3')
+#                             st.write('You are doing the Kobra!')
+#                         if predicted_class == 4:
+#                             update_category('category4')
+#                             st.write('You are doing the Down-Dog!')
+#                         st.write('-')
+#                     last_predicted_class = predicted_class
 
 
-        if cv2.waitKey(10) & 0xFF == ord('q'):
-            break
+#         if cv2.waitKey(10) & 0xFF == ord('q'):
+#             break
 
-cap.release()
+# cap.release()
 #cv2.destroyAllWindows()
