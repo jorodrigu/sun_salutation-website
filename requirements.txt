@@ -1,12 +1,7 @@
 streamlit
-<<<<<<< HEAD
-#streamlit_webrtc
+
 opencv-python-headless
 
 tensorflow
 numpy
 pandas
-#time
-=======
-opencv-python-headless
->>>>>>> e12e52dd3e4d2cab57621b48b79e53a890ab9ba6
