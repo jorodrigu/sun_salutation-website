@@ -181,6 +181,7 @@ start_time = time.time()
 label=""
 
 
+
 # cap = cv2.VideoCapture(-1)
 
 #######################################Joao#################
@@ -192,6 +193,10 @@ def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
     global frame_delay
     global last_predicted_class
     global label
+    global category_status
+
+
+
     frame_counter+=1
 
     image = skelet(image)
@@ -240,6 +245,17 @@ def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
             (255, 0, 0),
             2,
         )
+
+    cv2.putText(
+            image,
+            f"Counter:{counter}",
+            (50, 100),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.5,
+            (255, 0, 0),
+            2,
+        )
+
     return av.VideoFrame.from_ndarray(image, format="bgr24")
 
 
