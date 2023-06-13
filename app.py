@@ -57,8 +57,8 @@ def coord_landmarks(frame):
     coord = pose_landmarks.flatten() #.astype(str).tolist()
 
     return coord, min_landmark_score
-
-def preprocess_data(X_train: np.ndarray | pd.DataFrame):
+#: np.ndarray | pd.DataFrame
+def preprocess_data(X_train):
     X_train = X_train if isinstance(X_train, np.ndarray) else X_train.values
     processed_X_train = []
     for i in range(X_train.shape[0]):
