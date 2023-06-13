@@ -177,7 +177,7 @@ frame_delay =  1/ fps
 frame_counter=0
 
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 
 start_time = time.time()
