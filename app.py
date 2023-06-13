@@ -9,6 +9,8 @@ from Model.movenet import Movenet
 #from Model.data import BodyPart
 import time
 from Model.training import landmarks_to_embedding
+import av
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
 
 st.title("Sun Salutation Counter")
 
@@ -182,6 +184,11 @@ frame_counter=0
 #######################################Joao#################
 def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
     image = frame.to_ndarray(format="bgr24")
+
+    frame_counter += 1
+
+
+
     cv2.putText(
             image,
             str(image.mean()),
@@ -208,57 +215,58 @@ webrtc_ctx = webrtc_streamer(
 
 ###########################################################
 start_time = time.time()
-# while(cap.isOpened()):
-# # Capture frame-by-frame
-#     ret, frame = cap.read()
-#     if ret is True:
-#         frame_counter += 1  # Increment frame counter
+# while(webrtc_ctx.state.playing):
+# Capture frame-by-frame
+    # ret, frame = cap.read()
+# # if ret is True:
+#     frame_counter += 1  # Increment frame counter
 
-#         # Skip processing for two frames
-#         if frame_counter % 3 != 0:
-#             continue
+#     # Skip processing for two frames
+#     if frame_counter % 3 != 0:
+#         continue
 
-#         skelet(frame)
+#     frame=video_frame_callback()
+#     skelet(frame)
 
-#         current_time = time.time()
-#         # If the current time is greater than the start time plus the frame delay
-#         # Then process the frame and reset the start time
-#         if current_time > start_time + frame_delay:
-#             start_time = current_time
-#         coord, min_landmark_score = coord_landmarks(frame)
-#         #coord2= coord.shape
-#         coord = coord.reshape((1, 51))
-#         processed_X_pred = preprocess_data(coord)
-#         prediction = loaded_model.predict(processed_X_pred, verbose= 0)
-#         predicted_class = np.argmax(prediction)
-#         #coord2= coord.shape
-#         if min_landmark_score >= 0.3:
-#             #show in which class the prediction is print("Predicted class:", predicted_class)
-#             if predicted_class != 5:
-#                     if predicted_class != last_predicted_class:
-#                         st.write('-')
-#                         st.write(category_status)
-#                         if predicted_class == 0:
-#                             update_category('category0')
-#                             st.write('You are doing the Mountain!')
-#                         if predicted_class == 1:
-#                             update_category('category1')
-#                             st.write('You are doing the Forward-Bend!')
-#                         if predicted_class == 2:
-#                             update_category('category2')
-#                             st.write('You are doing the Plank!')
-#                         if predicted_class == 3:
-#                             update_category('category3')
-#                             st.write('You are doing the Kobra!')
-#                         if predicted_class == 4:
-#                             update_category('category4')
-#                             st.write('You are doing the Down-Dog!')
-#                         st.write('-')
-#                     last_predicted_class = predicted_class
+#     current_time = time.time()
+#     # If the current time is greater than the start time plus the frame delay
+#     # Then process the frame and reset the start time
+#     if current_time > start_time + frame_delay:
+#         start_time = current_time
+#     coord, min_landmark_score = coord_landmarks(frame)
+#     #coord2= coord.shape
+#     coord = coord.reshape((1, 51))
+#     processed_X_pred = preprocess_data(coord)
+#     prediction = loaded_model.predict(processed_X_pred, verbose= 0)
+#     predicted_class = np.argmax(prediction)
+#     #coord2= coord.shape
+#     if min_landmark_score >= 0.3:
+#         #show in which class the prediction is print("Predicted class:", predicted_class)
+#         if predicted_class != 5:
+#                 if predicted_class != last_predicted_class:
+#                     st.write('-')
+#                     st.write(category_status)
+#                     if predicted_class == 0:
+#                         update_category('category0')
+#                         st.write('You are doing the Mountain!')
+#                     if predicted_class == 1:
+#                         update_category('category1')
+#                         st.write('You are doing the Forward-Bend!')
+#                     if predicted_class == 2:
+#                         update_category('category2')
+#                         st.write('You are doing the Plank!')
+#                     if predicted_class == 3:
+#                         update_category('category3')
+#                         st.write('You are doing the Kobra!')
+#                     if predicted_class == 4:
+#                         update_category('category4')
+#                         st.write('You are doing the Down-Dog!')
+#                     st.write('-')
+#                 last_predicted_class = predicted_class
 
 
-#         if cv2.waitKey(10) & 0xFF == ord('q'):
-#             break
+#     if cv2.waitKey(10) & 0xFF == ord('q'):
+#         break
 
 # cap.release()
 #cv2.destroyAllWindows()
