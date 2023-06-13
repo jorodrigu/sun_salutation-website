@@ -1,1 +1,8 @@
 streamlit
+#streamlit_webrtc
+opencv-python-headless
+
+tensorflow
+numpy
+pandas
+#time
