@@ -8,3 +8,5 @@ pandas
 
 av
 streamlit_webrtc
+
+twilio~=8.2.2

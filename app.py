@@ -6,11 +6,17 @@ import tensorflow as tf
 from tensorflow import keras
 from keras.models import load_model
 from Model.movenet import Movenet
-#from Model.data import BodyPart
 import time
 from Model.training import landmarks_to_embedding
 import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
+from twilio.rest import Client
+
+account_sid = st.secrets['sid']
+auth_token = st.secrets['token']
+client = Client(account_sid, auth_token)
+
+token = client.tokens.create()
 
 st.title("Sun Salutation Counter")
 
@@ -82,7 +88,7 @@ def update_category(category):
     category_status[category] += 1
 
     # Check if all categories are completed
-    if all(category_status.values()):
+    if all(category_status.values()) and category == 'category0':
         global counter
         counter += 1
         reset_category_status()
@@ -118,8 +124,8 @@ def skelet(frame):
     draw_connections(img_resized, keypoints_for_resized, EDGES, 0.3)
     draw_keypoints(img_resized, keypoints_for_resized, 0.3)
 
-    final_image = cv2.resize(img_resized, (512, 512))
-    return final_image
+    #final_image = cv2.resize(img_resized, (480, 640), interpolation = cv2.INTER_AREA)
+    return img_resized, keypoints_for_resized
     # cv2.imshow('Wer das liest ist doof', final_image)
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
@@ -179,27 +185,26 @@ frame_delay =  1/ fps
 frame_counter=0
 start_time = time.time()
 label=""
+keypoints_for_resized=None
 
 
-
-# cap = cv2.VideoCapture(-1)
-
-#######################################Joao#################
+################################VIDEO####################################
 def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
     image = frame.to_ndarray(format="bgr24")
-
     global frame_counter
     global start_time
     global frame_delay
     global last_predicted_class
     global label
     global category_status
-
-
+    global keypoints_for_resized
+    global EDGES
 
     frame_counter+=1
+    ##Skip processing for two frames
+    # if frame_counter % 10 == 0:
 
-    image = skelet(image)
+    image, keypoints_for_resized = skelet(image)
 
     current_time = time.time()
     # If the current time is greater than the start time plus the frame delay
@@ -235,7 +240,7 @@ def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
                 last_predicted_class = predicted_class
 
 
-
+    image = cv2.resize(image, (640,640))[80:-80]
     cv2.putText(
             image,
             label,
@@ -255,7 +260,6 @@ def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
             (255, 0, 0),
             2,
         )
-
     return av.VideoFrame.from_ndarray(image, format="bgr24")
 
 
@@ -264,66 +268,7 @@ webrtc_ctx = webrtc_streamer(
     mode=WebRtcMode.SENDRECV,
     video_frame_callback=video_frame_callback,
     rtc_configuration={  # Add this config
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
-    },
+        "iceServers": token.ice_servers},
     media_stream_constraints={"video": True, "audio": False},
     async_processing=True,
 )
-
-
-###########################################################
-# while(webrtc_ctx.state.playing):
-# Capture frame-by-frame
-    # ret, frame = cap.read()
-# if ret is True:
-    # frame_counter += 1  # Increment frame counter
-
-    # Skip processing for two frames
-    # if frame_counter % 3 != 0:
-    #     continue
-
-    # frame=video_frame_callback()
-    # skelet(frame)
-
-    # current_time = time.time()
-    # # If the current time is greater than the start time plus the frame delay
-    # # Then process the frame and reset the start time
-    # if current_time > start_time + frame_delay:
-    #     start_time = current_time
-    # coord, min_landmark_score = coord_landmarks(frame)
-    # #coord2= coord.shape
-    # coord = coord.reshape((1, 51))
-    # processed_X_pred = preprocess_data(coord)
-    # predictio   n = loaded_model.predict(processed_X_pred, verbose= 0)
-    # predicted_class = np.argmax(prediction)
-    # #coord2= coord.shape
-    # if min_landmark_score >= 0.3:
-    #     #show in which class the prediction is print("Predicted class:", predicted_class)
-    #     if predicted_class != 5:
-    #             if predicted_class != last_predicted_class:
-    #                 st.write('-')
-    #                 st.write(category_status)
-    #                 if predicted_class == 0:
-    #                     update_category('category0')
-    #                     st.write('You are doing the Mountain!')
-    #                 if predicted_class == 1:
-    #                     update_category('category1')
-    #                     st.write('You are doing the Forward-Bend!')
-    #                 if predicted_class == 2:
-    #                     update_category('category2')
-    #                     st.write('You are doing the Plank!')
-    #                 if predicted_class == 3:
-    #                     update_category('category3')
-    #                     st.write('You are doing the Kobra!')
-    #                 if predicted_class == 4:
-    #                     update_category('category4')
-    #                     st.write('You are doing the Down-Dog!')
-    #                 st.write('-')
-    #             last_predicted_class = predicted_class
-
-
-    # if cv2.waitKey(10) & 0xFF == ord('q'):
-    #     break
-
-# cap.release()
-#cv2.destroyAllWindows()
