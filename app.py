@@ -11,6 +11,7 @@ from Model.training import landmarks_to_embedding
 import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from twilio.rest import Client
+from PIL import Image
 
 account_sid = st.secrets['sid']
 auth_token = st.secrets['token']
@@ -118,6 +119,7 @@ def skelet(frame):
 
     img_resized = np.array(input_image).astype(np.uint8)[0]
 
+
     keypoints_for_resized = keypoints_with_scores
     keypoints_for_resized[:, 0] *= img_resized.shape[1]
     keypoints_for_resized[:, 1] *= img_resized.shape[0]
@@ -187,10 +189,11 @@ start_time = time.time()
 label=""
 keypoints_for_resized=None
 
-
+st.write(counter)
 ################################VIDEO####################################
 def video_frame_callback(frame):
     image = frame.to_ndarray(format="bgr24")
+    image = image[:,::-1,:]  #flip horizontaly
     global frame_counter
     global start_time
     global frame_delay
@@ -199,6 +202,7 @@ def video_frame_callback(frame):
     global category_status
     global keypoints_for_resized
     global EDGES
+
 
     frame_counter+=1
     ##Skip processing for two frames
@@ -260,8 +264,7 @@ def video_frame_callback(frame):
             (255, 0, 0),
             2,
         )
-    return av.VideoFrame.from_ndarray(image, format="bgr24")
-
+    return av.VideoFrame.from_ndarray(image, format="bgr24"), counter
 
 webrtc_ctx = webrtc_streamer(
     key="object-detection",
@@ -270,5 +273,5 @@ webrtc_ctx = webrtc_streamer(
     rtc_configuration={  # Add this config
         "iceServers": token.ice_servers},
     media_stream_constraints={"video": True, "audio": False},
-    async_processing=True,
+    async_processing=False,
 )

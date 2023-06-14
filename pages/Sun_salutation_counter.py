@@ -191,6 +191,7 @@ keypoints_for_resized=None
 ################################VIDEO####################################
 def video_frame_callback(frame):
     image = frame.to_ndarray(format="bgr24")
+    image = image[:,::-1,:]  #flip horizontally
     global frame_counter
     global start_time
     global frame_delay
