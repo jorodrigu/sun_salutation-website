@@ -189,7 +189,7 @@ keypoints_for_resized=None
 
 
 ################################VIDEO####################################
-def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
+def video_frame_callback(frame):
     image = frame.to_ndarray(format="bgr24")
     global frame_counter
     global start_time
