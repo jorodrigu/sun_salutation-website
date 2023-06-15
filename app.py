@@ -193,7 +193,7 @@ st.write(counter)
 ################################VIDEO####################################
 def video_frame_callback(frame):
     image = frame.to_ndarray(format="bgr24")
-    image = image[:,::-1,:]  #flip horizontaly
+    image = image[:,::-1,:]  #flip horizontally
     global frame_counter
     global start_time
     global frame_delay
@@ -264,7 +264,7 @@ def video_frame_callback(frame):
             (255, 0, 0),
             2,
         )
-    return av.VideoFrame.from_ndarray(image, format="bgr24"), counter
+    return av.VideoFrame.from_ndarray(image, format="bgr24")
 
 webrtc_ctx = webrtc_streamer(
     key="object-detection",

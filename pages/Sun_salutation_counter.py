@@ -132,7 +132,7 @@ def draw_keypoints(frame, keypoints, confidence_threshold):
     for kp in keypoints:
         ky, kx, kp_conf = kp
         if kp_conf > confidence_threshold:
-            cv2.circle(frame, (int(kx), int(ky)), 2, (0,255,0), 1)
+            cv2.circle(frame, (int(kx), int(ky)), 2, (13, 141, 243), 1)
 
 EDGES = {
     (0, 1): 'm',
@@ -161,7 +161,7 @@ def draw_connections(frame, keypoints, edges, confidence_threshold):
         y2, x2, c2 = keypoints[p2]
 
         if (c1 > confidence_threshold) & (c2 > confidence_threshold):
-            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0,0,255), 1)
+            cv2.line(frame, (int(x1), int(y1)), (int(x2), int(y2)), (77, 18, 32), 1)
 
 
 def get_affine_transform_to_fixed_sizes_with_padding(size, new_sizes):
@@ -241,24 +241,27 @@ def video_frame_callback(frame):
                 last_predicted_class = predicted_class
 
 
-    image = cv2.resize(image, (640,640))[80:-80]
+    image = cv2.resize(image, (640,640))[:-80]
+
+    cv2.rectangle(image, (0, 0), (640, 80), (13, 141, 243), -1)
+
     cv2.putText(
             image,
             label,
-            (50,50),
+            (10,65),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.5,
-            (255, 0, 0),
+            (77, 18, 32),
             2,
         )
 
     cv2.putText(
             image,
-            f"Counter:{counter}",
-            (50, 100),
+            f" # of sun salutations : {counter}",
+            (170,25),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.5,
-            (255, 0, 0),
+            0.7,
+            (77, 18, 32),
             2,
         )
     return av.VideoFrame.from_ndarray(image, format="bgr24")
