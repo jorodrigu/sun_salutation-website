@@ -31,7 +31,4 @@ st.subheader('This is how the Sun Salutation Counter was built')
 
 - Definition of the pose sequence and implementation of the counter'''
 
-st.markdown(f"""<style>
-   p {
-   background-image: 'sunsal.jpg';
-   }</style>""",   unsafe_allow_html=True)
+st.image('combined_image.jpg', use_column_width=True)
