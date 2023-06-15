@@ -12,6 +12,19 @@ import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from twilio.rest import Client
 
+# aux functions for loading and caching models
+@st.cache_resource
+def load_movenet_model():
+    return Movenet('movenet_thunder')
+
+@st.cache_resource
+def load_poses_model():
+    return load_model("Model/BNTB/2023_06_08_BNTB_flipped_img")
+
+@st.cache_resource
+def load_movenet_interpreter():
+    return tf.lite.Interpreter(model_path='Model/movenet_thunder.tflite')
+
 account_sid = st.secrets['sid']
 auth_token = st.secrets['token']
 client = Client(account_sid, auth_token)
@@ -33,7 +46,8 @@ st.subheader('Start with the sun salutation when you can see your whole body in 
 
 #######liveframe-skeleton########
 
-movenet = Movenet('movenet_thunder')
+movenet = load_movenet_model()
+
 #implement
 def detect(input_tensor, inference_count=3):
     movenet.detect(input_tensor.numpy(), reset_crop_region=True)
@@ -74,7 +88,7 @@ def preprocess_data(X_train):
         processed_X_train.append(tf.reshape(embedding, (34)))
     return tf.convert_to_tensor(processed_X_train)
 
-loaded_model = load_model("Model/BNTB/2023_06_08_BNTB_flipped_img")
+loaded_model = load_poses_model()
 
 category_status = {
     'category0': -1,
@@ -173,7 +187,7 @@ def get_affine_transform_to_fixed_sizes_with_padding(size, new_sizes):
     return M
 
 
-interpreter = tf.lite.Interpreter(model_path='Model/movenet_thunder.tflite')
+interpreter = load_movenet_interpreter()
 interpreter.allocate_tensors()
 
 counter = 0
