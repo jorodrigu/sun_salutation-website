@@ -12,6 +12,8 @@ import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode
 from twilio.rest import Client
 
+st.set_page_config(page_icon=':sun_with_face:')
+
 # aux functions for loading and caching models
 @st.cache_resource
 def load_movenet_model():
@@ -42,6 +44,7 @@ if count_goal:
 
 st.title('Yoga Cam')
 st.subheader('Start with the sun salutation when you can see your whole body in the video')
+
 
 
 #######liveframe-skeleton########
@@ -79,7 +82,7 @@ def coord_landmarks(frame):
     coord = pose_landmarks.flatten() #.astype(str).tolist()
 
     return coord, min_landmark_score
-#: np.ndarray | pd.DataFrame
+
 def preprocess_data(X_train):
     X_train = X_train if isinstance(X_train, np.ndarray) else X_train.values
     processed_X_train = []
@@ -138,9 +141,8 @@ def skelet(frame):
     draw_connections(img_resized, keypoints_for_resized, EDGES, 0.3)
     draw_keypoints(img_resized, keypoints_for_resized, 0.3)
 
-    #final_image = cv2.resize(img_resized, (480, 640), interpolation = cv2.INTER_AREA)
     return img_resized, keypoints_for_resized
-    # cv2.imshow('Wer das liest ist doof', final_image)
+
 
 def draw_keypoints(frame, keypoints, confidence_threshold):
     for kp in keypoints:
@@ -257,10 +259,7 @@ def video_frame_callback(frame):
 
     image = cv2.resize(image, (640,640))[40:-120]
 
-    #image = cv2.resize(image, (640,640))[:-80] #stop button does not to appear
-    #image = cv2.copyMakeBorder(image, 0, 0, 0, 108, cv2.BORDER_CONSTANT, value=(153, 229, 255))
-
-    cv2.rectangle(image, (0, 0), (640, 80), (13, 141, 243), -1)
+    cv2.rectangle(image, (0, 0), (640, 80), (13, 141, 243), -1)  #rectangle for counter
 
     cv2.putText(
             image,
