@@ -255,7 +255,10 @@ def video_frame_callback(frame):
                 last_predicted_class = predicted_class
 
 
-    image = cv2.resize(image, (640,640))[:-80]
+    image = cv2.resize(image, (640,640))[40:-120]
+
+    #image = cv2.resize(image, (640,640))[:-80] #stop button does not to appear
+    #image = cv2.copyMakeBorder(image, 0, 0, 0, 108, cv2.BORDER_CONSTANT, value=(153, 229, 255))
 
     cv2.rectangle(image, (0, 0), (640, 80), (13, 141, 243), -1)
 
