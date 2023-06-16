@@ -105,7 +105,7 @@ def update_category(category):
     category_status[category] += 1
 
     # Check if all categories are completed
-    if all(category_status.values()) and category == 'category0':
+    if all(category_status.values()):
         global counter
         counter += 1
         reset_category_status()
